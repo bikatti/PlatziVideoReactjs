@@ -5,49 +5,41 @@ import Categories from '../components/Categories'
 import Carousel from '../components/Carousel'
 import CarouselItem from '../components/CarouselItem'
 import Footer from '../components/Footer'
+import useInitialState from '../hooks/useInitialState'
 import '../assets/styles/App.scss'
 
+const API = 'http://localhost:3000/initalState/'
+
 const App = () => {
-    const [ videos, setVideos ] = useState([])
+    const initialState = useInitialState(API)
 
-    useEffect(() => {
-        fetch('http://localhost:3000/initalState')
-            .then(response => response.json())
-            .then(data => setVideos(data))
-    }, [])
-
-    console.log(videos)
-
-    return (
+    return initialState.length === 0 ? <h1>Loading...</h1> : (
         <div className="App">
             <Header />
             <Search />
-            <Categories textCategory={'Mi lista'}>
-                <Carousel>
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                </Carousel>
-            </Categories>
+            {initialState.mylist.length > 0 &&
+                <Categories textCategory={'Mi lista'}>
+                    <Carousel>
+                        {initialState.mylist.map(item =>
+                            <CarouselItem key={item.id} {...item} />
+                        )}
+                    </Carousel>
+                </Categories>
+            }
 
             <Categories textCategory={'Tendencia'}>
                 <Carousel>
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
+                    {initialState.trends.map(item =>
+                        <CarouselItem key={item.id} {...item} />
+                    )}
                 </Carousel>
             </Categories>
 
             <Categories textCategory={'Originales de platzi video'}>
                 <Carousel>
-                    <CarouselItem title={'Título descriptivo'} />
-                    <CarouselItem title={'Título descriptivo'} />
+                    {initialState.originals.map(item =>
+                        <CarouselItem key={item.id} {...item} />
+                    )}
                 </Carousel>
             </Categories>
             <Footer />
